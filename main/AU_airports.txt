@@ -1,0 +1,6 @@
+BNE
+MEL
+ADL
+PER
+CBR
+SYD

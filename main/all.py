@@ -45,4 +45,9 @@ for port in airports:
         USairports += 1
 print(USairports)
 
+# Prints significant AU airports
+AU_good_ports = ["ADL","BNE","CBR","MEL","PER","SYD"]
+for port in airports:
+    if (port in AU_good_ports):
+        print(port)
 
