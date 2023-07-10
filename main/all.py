@@ -19,10 +19,11 @@ for port in airports:
     
 print("number of non IATA airports", nonIATA) # 0
 
-# Prints all the CN airports
+CN_good_ports = ["PEK", "PVG", "CAN", "CTU"]
+# Prints all the CN airports that are not internationally significant enough
 for port in airports:
-    if (airports[port]['country'] == 'CN'):
-        print(airports[port]['city'])
+    if (airports[port]['country'] == 'CN' and not port in CN_good_ports):
+        print(airports[port]['iata'])
 
 # Prints all the empty city airports (everything needs a city!)
 for port in airports:
@@ -38,6 +39,10 @@ for port in airports:
 print("ICAO found:", ICAO)
 
 # Prints the number of US airports
+USairports = 0
 for port in airports:
     if (airports[port]['country'] == 'US'):
-        print(airports[port]['city'])
+        USairports += 1
+print(USairports)
+
+
