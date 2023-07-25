@@ -43,7 +43,11 @@ countries = []
 unique_countries = set()
 for code, index in df.iterrows():
     code = code.strip()
-    country = airports[code]['country']
+    try:
+        country = airports[code]['country']
+    except KeyError:
+        print("Could not find", code)
+        continue
     countries.append(country)
     unique_countries.add(country)
 
