@@ -6,8 +6,9 @@ airports = airportsdata.load('IATA')
 
 def read(filename):
     try:
-        df = pd.read_csv(filename).transpose()
-        df.rename(index=str.strip)
+        df = pd.read_csv(filename, header=None)
+        print(df)
+    # df.rename(index=str.strip)
     except:
         print("Could not open file, check path", file=sys.stderr)
         exit()
@@ -38,30 +39,36 @@ directory and all the files at " + dirpath+ "? (y/n) ")
 df = read(sys.argv[1])
 mkout()
 
+# Pass over whole list to make sure each code is valid
+for index, code in df.items():
+    df.at[0,index] = df.at[0,index].strip()
+    print(df.at[0,index])
+    try:
+        country = airports[df.at[0,index]]['country']
+    except KeyError:
+        print("Could not find", index)
+        df = df.drop(index, axis=1)
+        # df.drop(str(code), axis=0,inplace=True)
+        continue    
 
+print("\n\n\n\n\nfinding country")
+# Finding country, after passing through and making sure each code is valid
 countries = []
 unique_countries = set()
-for code, index in df.iterrows():
-    code = code.strip()
-    try:
-        country = airports[code]['country']
-    except KeyError:
-        print("Could not find", code)
-        continue
+for index, code in df.items():
+    country = airports[df.at[0,index]]['country']
     countries.append(country)
     unique_countries.add(country)
 
-df['countries'] = countries
-
-
-df.sort_values(by=['countries'], inplace=True)
-
+df.loc[len(df.index)] = countries
+df.sort_values(by=[1],axis=1, inplace=True)
+print(df)
 
 paths = []
 countryNames = []
 files = []
 for code in unique_countries:
-    filename = sys.argv[2] + "/" + code + ".txt"
+    filename = sys.argv[2] + "/" + code
     file = open(filename, "x")
     countryNames.append(code)
     paths.append(filename)
@@ -71,14 +78,17 @@ EAGLE = ["US"]
 for x in range(len(countryNames)):
     code = countryNames[x]
     filepath = paths[x]
-    filter = df.query("countries == @code")
-    del filter['countries']
+    ports = []
+    for index, code in df.items():
+        if (countryNames[x] == df.at[1,index]):
+            ports.append(df.at[0,index])
+
+    print(ports)
     with files[x] as f:
-        list = filter.index.values.tolist()
         count = 0
-        for port in list:
-            if (count == len(list) - 1):
-                f.write(port)
+        for elem in ports:
+            if (count == len(ports) - 1):
+                f.write(elem)
             else:
-                f.write(port + ", ")
+                f.write(elem + ", ")
             count += 1
